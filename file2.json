@@ -1,0 +1,20 @@
+{
+  "angajati": [
+    {
+      "nume":"Munteanu",
+      "prenume":"Ion",
+      "salariu":"5000"
+
+    },
+    {
+      "nume":"Trocin",
+      "prenume":"Vadim",
+      "salariu":"2500"
+    },
+    {
+      "nume":"Eladii",
+      "prenume":"Vadim",
+      "salariu":"10000"
+    }
+  ]
+}

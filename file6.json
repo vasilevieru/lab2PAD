@@ -1,0 +1,28 @@
+{
+  "angajati": [
+    {
+      "nume":"Laba",
+      "prenume":"Ion",
+      "salariu":"3200"
+
+    },
+    {
+      "nume":"Grosu",
+      "prenume":"Vitalie",
+      "salariu":"4500"
+
+    },
+    {
+      "nume":"Grecica",
+      "prenume":"Anatol",
+      "salariu":"5500"
+
+    },
+    {
+      "nume":"Tormoz",
+      "prenume":"Mufta",
+      "salariu":"3000"
+
+    }
+  ]
+}

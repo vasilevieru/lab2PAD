@@ -1,0 +1,15 @@
+{
+  "name": "lab2pad",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "body-parser": "~1.18.2",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.6.9",
+    "serve-favicon": "~2.4.5",
+    "json-socket": "latest",
+    "dgram": "~1.0.1",
+    "xmlbuilder": "~9.0.4",
+    "js2xmlparser": "latest"
+  }
+}
