@@ -13,7 +13,6 @@ var registered = "you are registered";
 var sendmore = "I dont received anything from you";
 var selectedNode = [];
 var ipNodeSelected, portNodeSelected;
-var allData;
 var receivedData, xml;
 
 
@@ -40,10 +39,12 @@ function selectNode() {
 var server = net.createServer(function (socket) {
     socket = new JsonSocket(socket);
     socket.on('message', function (msg) {
-        if (msg.message === "sendData") {
+        if (msg.message === "sendjson") {
             console.log('  ** START **');
             console.log('<< From client to proxy: ', msg.message.toString());
             socket.sendMessage(receivedData);
+        }else if(msg.message === "sendxml"){
+            socket.sendMessage(xml);
         }
     });
     socket.on('end', function () {
@@ -66,7 +67,7 @@ function sendMessageToSendData() {
             //console.log('Received: ' + data);
             receivedData = JSON.stringify(data);
 
-            //xml = json2xml.parse("root", JSON.parse(JSON.stringify(data)));
+            xml = json2xml.parse("root", JSON.parse(JSON.stringify(data)));
             console.log(receivedData);
             //console.log(xml);
         });
@@ -104,7 +105,7 @@ s.on("message", function (msg, rinfo) {
     console.log("server got: " + msg + " from " +
         rinfo.address + ":" + rinfo.port);
     var message = new Buffer("Address to send data is: " + REMOTE_ADDR + ":" + LOCAL_PORT);
-    s.send(message, 0, message.length, rinfo.port, rinfo.address, function (err, bytes) {
+    s.send(message, 0, message.length, rinfo.port, rinfo.address, function (err) {
         if (err) {
             console.error(err);
         }
@@ -124,6 +125,6 @@ setTimeout(function () {
 }, 25000);
 
 s.on('error', function (err) {
-    console.log('server error:\n${err.stack}');
+    console.log('server error:\n' + err.stack);
     server.close();
 });
