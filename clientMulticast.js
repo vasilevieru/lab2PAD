@@ -55,6 +55,24 @@ function getLinks(port) {
 var json = fs.readFileSync('/home/vasile/IdeaProjects/lab2PAD/' + filename, 'utf-8');
 console.log(json);
 
+function sortData(data) {
+    var js = JSON.parse(data);
+    var angajati = js.angajati.sort(function (a, b) {
+        return a.salariu - b.salariu;
+    });
+    console.log("Sortat:" + JSON.stringify(angajati));
+}
+
+function filterData(data) {
+    var js = JSON.parse(data);
+    var filtered = js.angajati.filter(function (t) {
+        return t.salariu >= 5000
+    });
+    console.log("Filtrat: " + JSON.stringify(filtered));
+    return filtered;
+}
+
+
 s.on('message', function (message, rinfo) {
     console.log('Message from UDP multicast: ' + rinfo.address + ':' + rinfo.port + ' - ' + message);
     getLinks(PORT);
@@ -102,9 +120,10 @@ function sendMessagetoNodes(i) {
             }
             sendMessagetoNodes(i + 1);
         });
-    }/* else {
-        console.log(JSON.stringify(collectedMessages));
-    }*/
+    }
+    /* else {
+            console.log(JSON.stringify(collectedMessages));
+        }*/
 }
 
 function connectToNodes(port, callback) {
@@ -128,13 +147,12 @@ var server = net.createServer(function (socket) {
                 socket.sendMessage(collectedMessages, function () {
                     console.log("sent :" + JSON.stringify(collectedMessages));
                 });
-            },1000);
+            }, 1000);
         }
         else if (msg.command === "send") {
             socket.sendMessage(json, function () {
                 console.log("Sent to principal node:" + json);
             });
-
         }
     });
     socket.on('end', function () {
