@@ -3,11 +3,13 @@ var JsonSocket = require('json-socket');
 var validator = require('xsd-schema-validator');
 const args = process.argv;
 var messageFormat = args[2];
+var dictionary = {"command":messageFormat, "methode":args[3], "field":args[4]};
 
 var client = new JsonSocket(new net.Socket());
 client.connect(6512, '127.0.0.1', function() {
     console.log('Connected');
-    client.sendMessage({"message":messageFormat});
+    client.sendMessage(dictionary);
+    console.log("Sent to proxy: " + dictionary);
 });
 
 client.on('message', function(data) {
@@ -20,6 +22,8 @@ client.on('message', function(data) {
             }
             console.log("Xml validating: " + result.valid);
         });
+    }else if(messageFormat === "sendjson"){
+        console.log(JSON.stringify(JSON.parse(data)));
     }
     //console.log("data: " + data);
     //console.log('Received: '+ JSON.parse(JSON.stringify(data)));

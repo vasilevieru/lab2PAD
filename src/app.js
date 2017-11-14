@@ -14,7 +14,8 @@ var sendmore = "I dont received anything from you";
 var selectedNode = [];
 var ipNodeSelected, portNodeSelected;
 var receivedData, xml;
-
+var methode,field;
+var final = '{"angajati":[]}';
 
 function sortData() {
     if (data_nodes.length > 1) {
@@ -39,12 +40,16 @@ function selectNode() {
 var server = net.createServer(function (socket) {
     socket = new JsonSocket(socket);
     socket.on('message', function (msg) {
-        if (msg.message === "sendjson") {
+        if (msg.command === "sendjson") {
+            methode = msg.methode;
+            field = msg.field;
             console.log('  ** START **');
-            console.log('<< From client to proxy: ', msg.message.toString());
-            socket.sendMessage(receivedData);
-        }else if(msg.message === "sendxml"){
-            socket.sendMessage(xml);
+            console.log('<< From client to proxy: ', JSON.stringify(msg));
+           // socket.sendMessage(receivedData);
+        }else if(msg.command === "sendxml"){
+            methode = msg.methode;
+            field = msg.field;
+          //  socket.sendMessage(xml);
         }
     });
     socket.on('end', function () {
@@ -60,16 +65,22 @@ function sendMessageToSendData() {
         var client = new JsonSocket(new net.Socket());
         client.connect(portNodeSelected, ipNodeSelected.toString(), function () {
             console.log("Connected to " + ipNodeSelected + ":" + portNodeSelected);
-            client.sendMessage({"command": "sendAll"});
+            client.sendMessage({"command": "sendAll", "methode":methode, "field":field});
         });
 
         client.on('message', function (data) {
             //console.log('Received: ' + data);
-            receivedData = JSON.stringify(data);
-
-            xml = json2xml.parse("root", JSON.parse(JSON.stringify(data)));
-            console.log(receivedData);
-            //console.log(xml);
+            receivedData = JSON.parse(JSON.stringify(data));
+            var angajati = receivedData.angajati.sort(function (a, b) {
+                return  a.salariu - b.salariu;
+            });
+            final = JSON.parse(final);
+            for(var j = 0; j< angajati.length; j++){
+                final.angajati.push(angajati[j]);
+            }
+            console.log(final);
+            xml = json2xml.parse("root", JSON.parse(JSON.stringify(final)));
+            console.log(xml);
         });
 
         client.on('close', function () {
@@ -119,7 +130,7 @@ s.on('close', function () {
 });
 
 setTimeout(function () {
-    console.log("UPD Multicas server is closing");
+    console.log("UPD Multicast server is closing");
     s.close();
     sortData();
 }, 25000);

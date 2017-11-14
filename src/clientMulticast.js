@@ -13,6 +13,7 @@ var filename = args[3];
 var links = null;
 var p = [];
 var messageJson, collectedMessages;
+var methode;
 
 function initializePorts(port) {
     if (port === "8002") {
@@ -57,10 +58,15 @@ console.log(json);
 
 function sortData(data) {
     var js = JSON.parse(data);
-    var angajati = js.angajati.sort(function (a, b) {
-        return a.salariu - b.salariu;
-    });
-    console.log("Sortat:" + JSON.stringify(angajati));
+    if(js.angajati.length > 2) {
+        var angajati = js.angajati.sort(function (a, b) {
+            return a.salariu - b.salariu;
+        });
+        console.log("Sortat:" + JSON.stringify(angajati));
+        return angajati;
+    }else{
+        return js.angajati;
+    }
 }
 
 function filterData(data) {
@@ -108,16 +114,19 @@ function sendMessagetoNodes(i) {
         console.log(p[i]);
         client = new JsonSocket(new net.Socket());
         client.connect(p[i], "localhost", function () {
-            client.sendMessage({"command": "send"});
+            client.sendMessage({"command": "send", "methode":methode});
             messageJson = null;
             console.log("vrea sa trimita mesaj");
         });
         client.on("message", function (data) {
             messageJson = JSON.parse(data);
-            console.log(messageJson.angajati);
-            for (var j = 0; j < messageJson.angajati.length; j++) {
-                collectedMessages.angajati.push(messageJson.angajati[j]);
+            //console.log(messageJson.angajati);
+            console.log(messageJson);
+            console.log("Se duce in for");
+            for (var j = 0; j < messageJson.length; j++) {
+                collectedMessages.angajati.push(messageJson[j]);
             }
+
             sendMessagetoNodes(i + 1);
         });
     }
@@ -136,6 +145,9 @@ var server = net.createServer(function (socket) {
     socket.on('message', function (msg) {
         console.log(msg);
         if (msg.command === "sendAll") {
+            if(msg.methode === "sort"){
+                methode = msg.methode;
+            }
             collectedMessages = JSON.parse(json);
             connectToNodes(p[0], function () {
                 sendMessagetoNodes(0);
@@ -143,16 +155,20 @@ var server = net.createServer(function (socket) {
 
             setTimeout(function () {
                 //console.log("Collected messages" + JSON.stringify(collectedMessages))
-
                 socket.sendMessage(collectedMessages, function () {
                     console.log("sent :" + JSON.stringify(collectedMessages));
                 });
             }, 1000);
         }
         else if (msg.command === "send") {
-            socket.sendMessage(json, function () {
-                console.log("Sent to principal node:" + json);
-            });
+            console.log(msg.methode);
+            if(msg.methode === "sort"){
+                console.log(json);
+                var result = sortData(json);
+                socket.sendMessage(JSON.stringify(result), function () {
+                    console.log("Sent to principal node:" + JSON.stringify(result));
+                });
+            }
         }
     });
     socket.on('end', function () {
