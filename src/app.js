@@ -19,7 +19,7 @@ var server = net.createServer(function (socket) {
     var selectedNode = [];
 
     var receivedData, xml;
-    var methode,field, command;
+    var methode, command;
     var final = '{"angajati":[]}';
 
     s.bind(PORT, function () {
@@ -71,7 +71,6 @@ var server = net.createServer(function (socket) {
     socket = new JsonSocket(socket);
     socket.on('message', function (msg) {
             methode = msg.methode;
-            field = msg.field;
             command = msg.command;
     });
     socket.on('end', function () {
@@ -100,7 +99,7 @@ var server = net.createServer(function (socket) {
                         var client = new JsonSocket(new net.Socket());
                         client.connect(portNodeSelected, ipNodeSelected.toString(), function () {
                             console.log("Connected to " + ipNodeSelected + ":" + portNodeSelected);
-                            client.sendMessage({"command": "sendAll", "methode":methode, "field":field});
+                            client.sendMessage({"command": "sendAll", "methode":methode});
                         });
 
                         client.on('message', function (data) {

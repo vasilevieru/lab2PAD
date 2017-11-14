@@ -1,0 +1,35 @@
+{
+  "type": "object",
+  "properties": {
+    "angajati": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "nume": {
+                "type": "string"
+              },
+              "prenume": {
+                "type": "string"
+              },
+              "salariu": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "nume",
+              "prenume",
+              "salariu"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      }
+    }
+  },
+  "required":[
+    "angajati"
+  ]
+}

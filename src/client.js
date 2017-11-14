@@ -1,6 +1,9 @@
 var net = require('net');
 var JsonSocket = require('json-socket');
 var validator = require('xsd-schema-validator');
+var Validator = require('jsonschema').Validator;
+var v = new Validator();
+var fs = require('fs');
 const args = process.argv;
 var messageFormat = args[2];
 var dictionary = {"command":messageFormat, "methode":args[3], "field":args[4]};
@@ -22,7 +25,12 @@ client.on('message', function(data) {
             console.log("Xml validating: " + result.valid);
         });
     }else if(messageFormat === "sendjson"){
+        var schema = JSON.parse(fs.readFileSync('/home/vasile/IdeaProjects/lab2PAD/jsonSchema/jsonSchema.json', 'utf-8'));
+
+        console.log(schema);
         console.log(data);
+        var result = v.validate(data, schema);
+        console.log("Validated: " + result.valid);
     }
 
 });
